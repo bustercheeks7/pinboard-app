@@ -26,6 +26,7 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedFlags, setSelectedFlags] = useState<string[]>([])
   const [tags, setTags] = useState<string[]>([])
+  const [categoryTags, setCategoryTags] = useState<{ [categoryName: string]: string[] }>({})
   const [newTag, setNewTag] = useState("")
   const [newFlag, setNewFlag] = useState("")
   const [isFetching, setIsFetching] = useState(false)
@@ -82,6 +83,7 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
       categories: selectedCategories,
       flags: selectedFlags,
       tags,
+      categoryTags,
       ratings: {},
       colorIntensity: "default",
     })
@@ -92,6 +94,7 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
     setSelectedCategories([])
     setSelectedFlags([])
     setTags([])
+    setCategoryTags({})
     setShowHttpsPrompt(false)
     setOpen(false)
   }
@@ -109,6 +112,27 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
       setSelectedFlags([...selectedFlags, newFlag])
       setNewFlag("")
     }
+  }
+
+  const handleAddCategoryTag = (category: string) => {
+    if (newTag && !(categoryTags[category] || []).includes(newTag)) {
+      setCategoryTags({
+        ...categoryTags,
+        [category]: [...(categoryTags[category] || []), newTag],
+      })
+      setNewTag("")
+    }
+  }
+
+  const handleRemoveCategoryTag = (category: string, tag: string) => {
+    const updatedCategoryTags = { ...categoryTags }
+    if (updatedCategoryTags[category]) {
+      updatedCategoryTags[category] = updatedCategoryTags[category].filter((t) => t !== tag)
+      if (updatedCategoryTags[category].length === 0) {
+        delete updatedCategoryTags[category]
+      }
+    }
+    setCategoryTags(updatedCategoryTags)
   }
 
   return (
@@ -227,18 +251,28 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">Tags</label>
+            <label className="text-sm font-medium mb-2 block">General Tags (shown in all categories)</label>
             <div className="flex flex-wrap gap-2 mb-2">
               {tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="gap-1">
+                <Badge key={tag} variant="secondary" className="gap-1 pr-1">
                   {tag}
-                  <X className="w-3 h-3 cursor-pointer" onClick={() => setTags(tags.filter((t) => t !== tag))} />
+                  <button
+                    type="button"
+                    className="ml-1 hover:text-destructive"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setTags(tags.filter((t) => t !== tag))
+                    }}
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
                 </Badge>
               ))}
             </div>
             <div className="flex gap-2">
               <Input
-                placeholder="Add tag (e.g., React, DALL-E 3)"
+                placeholder="Add general tag (e.g., React, DALL-E 3)"
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
@@ -248,6 +282,47 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
               </Button>
             </div>
           </div>
+          {selectedCategories.length > 0 && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">Category-Specific Tags</label>
+              <div className="space-y-3">
+                {selectedCategories.map((category) => (
+                  <div key={category} className="space-y-2">
+                    <div className="text-sm text-muted-foreground">{category}</div>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {(categoryTags[category] || []).map((tag) => (
+                        <Badge key={tag} variant="outline" className="gap-1 pr-1">
+                          {tag}
+                          <button
+                            type="button"
+                            className="ml-1 hover:text-destructive"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              handleRemoveCategoryTag(category, tag)
+                            }}
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder={`Add tag for ${category}`}
+                        value={newTag}
+                        onChange={(e) => setNewTag(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleAddCategoryTag(category)}
+                      />
+                      <Button size="sm" onClick={() => handleAddCategoryTag(category)}>
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="flex gap-2 justify-end">
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel

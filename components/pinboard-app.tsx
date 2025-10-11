@@ -20,6 +20,7 @@ export interface Service {
   categories: string[]
   flags: string[]
   tags: string[]
+  categoryTags?: { [categoryName: string]: string[] }
   ratings: { [categoryName: string]: number }
   order: number
   colorIntensity?: "default" | "lighter" | "light" | "bright"
@@ -109,6 +110,12 @@ export function PinboardApp() {
               return {
                 ...service,
                 ratings: {},
+              }
+            }
+            if (!service.categoryTags) {
+              return {
+                ...service,
+                categoryTags: {},
               }
             }
             return service

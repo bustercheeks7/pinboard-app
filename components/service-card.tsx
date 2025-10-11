@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { GripVertical, Star, Edit2, Trash2, ExternalLink, X, Plus, Download } from "lucide-react"
+import { GripVertical, Star, Edit2, Trash2, ExternalLink, X, Plus, Download, Loader2, AlertCircle } from "lucide-react"
 import type { Service } from "@/components/pinboard-app"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface ServiceCardProps {
   service: Service
@@ -74,6 +75,7 @@ export function ServiceCard({
   const serviceWithRatings = {
     ...service,
     ratings: service.ratings || {},
+    categoryTags: service.categoryTags || {},
   }
 
   const [isEditing, setIsEditing] = useState(false)
@@ -82,6 +84,7 @@ export function ServiceCard({
   const [newTag, setNewTag] = useState("")
   const [newCategory, setNewCategory] = useState("")
   const [isFetching, setIsFetching] = useState(false)
+  const [showHttpsPrompt, setShowHttpsPrompt] = useState(false)
   const justClosedRef = useRef(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -138,6 +141,28 @@ export function ServiceCard({
     }
   }
 
+  const handleAddCategoryTag = (category: string) => {
+    if (newTag && !(editedService.categoryTags?.[category] || []).includes(newTag)) {
+      const updatedCategoryTags = {
+        ...editedService.categoryTags,
+        [category]: [...(editedService.categoryTags?.[category] || []), newTag],
+      }
+      setEditedService({ ...editedService, categoryTags: updatedCategoryTags })
+      setNewTag("")
+    }
+  }
+
+  const handleRemoveCategoryTag = (category: string, tag: string) => {
+    const updatedCategoryTags = { ...editedService.categoryTags }
+    if (updatedCategoryTags[category]) {
+      updatedCategoryTags[category] = updatedCategoryTags[category].filter((t) => t !== tag)
+      if (updatedCategoryTags[category].length === 0) {
+        delete updatedCategoryTags[category]
+      }
+    }
+    setEditedService({ ...editedService, categoryTags: updatedCategoryTags })
+  }
+
   const handleAddCategory = () => {
     if (newCategory.trim() && !allCategories.includes(newCategory.trim())) {
       onAddCategory(newCategory.trim())
@@ -150,6 +175,20 @@ export function ServiceCard({
     if (!isEditing && !justClosedRef.current) {
       window.open(service.url, "_blank", "noopener,noreferrer")
     }
+  }
+
+  const handleUrlChange = (value: string) => {
+    setEditedService({ ...editedService, url: value })
+    if (value && !value.startsWith("http://") && !value.startsWith("https://") && value.includes(".")) {
+      setShowHttpsPrompt(true)
+    } else {
+      setShowHttpsPrompt(false)
+    }
+  }
+
+  const handleAddHttps = () => {
+    setEditedService({ ...editedService, url: `https://${editedService.url}` })
+    setShowHttpsPrompt(false)
   }
 
   const handleFetchMetadata = async () => {
@@ -226,7 +265,7 @@ export function ServiceCard({
                     <div className="flex gap-2">
                       <Input
                         value={editedService.url}
-                        onChange={(e) => setEditedService({ ...editedService, url: e.target.value })}
+                        onChange={(e) => handleUrlChange(e.target.value)}
                         className="flex-1"
                       />
                       <Button
@@ -236,10 +275,20 @@ export function ServiceCard({
                         onClick={handleFetchMetadata}
                         disabled={!editedService.url || isFetching}
                       >
-                        <Download className="w-4 h-4 mr-1" />
-                        {isFetching ? "Fetching..." : "Fetch"}
+                        {isFetching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                       </Button>
                     </div>
+                    {showHttpsPrompt && (
+                      <Alert className="mt-2">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription className="flex items-center justify-between">
+                          <span className="text-sm">Add https:// to URL?</span>
+                          <Button size="sm" variant="outline" onClick={handleAddHttps}>
+                            Add https://
+                          </Button>
+                        </AlertDescription>
+                      </Alert>
+                    )}
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-1 block">Description</label>
@@ -418,7 +467,7 @@ export function ServiceCard({
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Tags</label>
+                    <label className="text-sm font-medium mb-2 block">General Tags (shown in all categories)</label>
                     <div className="flex flex-wrap gap-2 mb-2">
                       {editedService.tags.map((tag) => (
                         <Badge key={tag} variant="secondary" className="gap-1 pr-1">
@@ -442,7 +491,7 @@ export function ServiceCard({
                     </div>
                     <div className="flex gap-2">
                       <Input
-                        placeholder="Add tag (e.g., React, DALL-E 3)"
+                        placeholder="Add general tag (e.g., React, DALL-E 3)"
                         value={newTag}
                         onChange={(e) => setNewTag(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
@@ -452,6 +501,47 @@ export function ServiceCard({
                       </Button>
                     </div>
                   </div>
+                  {editedService.categories.length > 0 && (
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Category-Specific Tags</label>
+                      <div className="space-y-3">
+                        {editedService.categories.map((category) => (
+                          <div key={category} className="space-y-2">
+                            <div className="text-sm text-muted-foreground">{category}</div>
+                            <div className="flex flex-wrap gap-2 mb-2">
+                              {(editedService.categoryTags?.[category] || []).map((tag) => (
+                                <Badge key={tag} variant="outline" className="gap-1 pr-1">
+                                  {tag}
+                                  <button
+                                    type="button"
+                                    className="ml-1 hover:text-destructive"
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      e.stopPropagation()
+                                      handleRemoveCategoryTag(category, tag)
+                                    }}
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </Badge>
+                              ))}
+                            </div>
+                            <div className="flex gap-2">
+                              <Input
+                                placeholder={`Add tag for ${category}`}
+                                value={newTag}
+                                onChange={(e) => setNewTag(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && handleAddCategoryTag(category)}
+                              />
+                              <Button size="sm" onClick={() => handleAddCategoryTag(category)}>
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="flex gap-2 justify-between pt-4 border-t border-border">
                     <Button
                       variant="destructive"
@@ -500,6 +590,12 @@ export function ServiceCard({
               {showTags &&
                 service.tags.map((tag) => (
                   <Badge key={tag} variant="secondary" className="text-xs font-mono">
+                    {tag}
+                  </Badge>
+                ))}
+              {showTags &&
+                (service.categoryTags?.[currentCategory] || []).map((tag) => (
+                  <Badge key={`cat-${tag}`} variant="outline" className="text-xs font-mono">
                     {tag}
                   </Badge>
                 ))}
