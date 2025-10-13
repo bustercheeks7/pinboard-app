@@ -17,6 +17,7 @@ interface ServiceCardProps {
   service: Service
   availableFlags: string[]
   allCategories: string[]
+  allCategoriesData: Array<{ id: string; name: string; tags: string[] }>
   allServices: Service[]
   currentCategory: string
   categoryHue?: number
@@ -58,6 +59,7 @@ export function ServiceCard({
   service,
   availableFlags,
   allCategories,
+  allCategoriesData,
   allServices,
   currentCategory,
   categoryHue,
@@ -82,6 +84,7 @@ export function ServiceCard({
   const [editedService, setEditedService] = useState(serviceWithRatings)
   const [newFlag, setNewFlag] = useState("")
   const [newTag, setNewTag] = useState("")
+  const [categoryTagInputs, setCategoryTagInputs] = useState<{ [category: string]: string }>({})
   const [newCategory, setNewCategory] = useState("")
   const [isFetching, setIsFetching] = useState(false)
   const [showHttpsPrompt, setShowHttpsPrompt] = useState(false)
@@ -142,13 +145,14 @@ export function ServiceCard({
   }
 
   const handleAddCategoryTag = (category: string) => {
-    if (newTag && !(editedService.categoryTags?.[category] || []).includes(newTag)) {
+    const tagValue = categoryTagInputs[category] || ""
+    if (tagValue && !(editedService.categoryTags?.[category] || []).includes(tagValue)) {
       const updatedCategoryTags = {
         ...editedService.categoryTags,
-        [category]: [...(editedService.categoryTags?.[category] || []), newTag],
+        [category]: [...(editedService.categoryTags?.[category] || []), tagValue],
       }
       setEditedService({ ...editedService, categoryTags: updatedCategoryTags })
-      setNewTag("")
+      setCategoryTagInputs({ ...categoryTagInputs, [category]: "" })
     }
   }
 
@@ -248,7 +252,7 @@ export function ServiceCard({
                   <Edit2 className="w-4 h-4" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
                 <DialogHeader>
                   <DialogTitle>Edit Service</DialogTitle>
                 </DialogHeader>
@@ -505,40 +509,81 @@ export function ServiceCard({
                     <div>
                       <label className="text-sm font-medium mb-2 block">Category-Specific Tags</label>
                       <div className="space-y-3">
-                        {editedService.categories.map((category) => (
-                          <div key={category} className="space-y-2">
-                            <div className="text-sm text-muted-foreground">{category}</div>
-                            <div className="flex flex-wrap gap-2 mb-2">
-                              {(editedService.categoryTags?.[category] || []).map((tag) => (
-                                <Badge key={tag} variant="outline" className="gap-1 pr-1">
-                                  {tag}
-                                  <button
-                                    type="button"
-                                    className="ml-1 hover:text-destructive"
-                                    onClick={(e) => {
-                                      e.preventDefault()
-                                      e.stopPropagation()
-                                      handleRemoveCategoryTag(category, tag)
-                                    }}
-                                  >
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </Badge>
-                              ))}
+                        {editedService.categories.map((category) => {
+                          const categoryData = allCategoriesData.find((c) => c.name === category)
+                          const categoryTagsList = categoryData?.tags || []
+                          const inputValue = categoryTagInputs[category] || ""
+                          const filteredSuggestions = inputValue
+                            ? categoryTagsList.filter(
+                                (tag) =>
+                                  tag.toLowerCase().includes(inputValue.toLowerCase()) &&
+                                  !(editedService.categoryTags?.[category] || []).includes(tag)
+                              )
+                            : []
+
+                          return (
+                            <div key={category} className="space-y-2">
+                              <div className="text-sm text-muted-foreground">{category}</div>
+                              <div className="flex flex-wrap gap-2 mb-2">
+                                {(editedService.categoryTags?.[category] || []).map((tag) => (
+                                  <Badge key={tag} variant="outline" className="gap-1 pr-1">
+                                    {tag}
+                                    <button
+                                      type="button"
+                                      className="ml-1 hover:text-destructive"
+                                      onClick={(e) => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        handleRemoveCategoryTag(category, tag)
+                                      }}
+                                    >
+                                      <X className="w-3 h-3" />
+                                    </button>
+                                  </Badge>
+                                ))}
+                              </div>
+                              <div className="relative">
+                                <div className="flex gap-2">
+                                  <Input
+                                    placeholder={`Add tag for ${category}`}
+                                    value={inputValue}
+                                    onChange={(e) =>
+                                      setCategoryTagInputs({ ...categoryTagInputs, [category]: e.target.value })
+                                    }
+                                    onKeyDown={(e) => e.key === "Enter" && handleAddCategoryTag(category)}
+                                  />
+                                  <Button size="sm" onClick={() => handleAddCategoryTag(category)}>
+                                    <Plus className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                                {filteredSuggestions.length > 0 && (
+                                  <div className="absolute z-10 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-40 overflow-auto">
+                                    {filteredSuggestions.map((suggestion) => (
+                                      <button
+                                        key={suggestion}
+                                        type="button"
+                                        className="w-full text-left px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+                                        onClick={() => {
+                                          const updatedCategoryTags = {
+                                            ...editedService.categoryTags,
+                                            [category]: [
+                                              ...(editedService.categoryTags?.[category] || []),
+                                              suggestion,
+                                            ],
+                                          }
+                                          setEditedService({ ...editedService, categoryTags: updatedCategoryTags })
+                                          setCategoryTagInputs({ ...categoryTagInputs, [category]: "" })
+                                        }}
+                                      >
+                                        {suggestion}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <div className="flex gap-2">
-                              <Input
-                                placeholder={`Add tag for ${category}`}
-                                value={newTag}
-                                onChange={(e) => setNewTag(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleAddCategoryTag(category)}
-                              />
-                              <Button size="sm" onClick={() => handleAddCategoryTag(category)}>
-                                <Plus className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
+                          )
+                        })}
                       </div>
                     </div>
                   )}

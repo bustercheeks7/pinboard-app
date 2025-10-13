@@ -368,13 +368,13 @@ export function PinboardApp() {
   return (
     <div className="min-h-screen bg-background text-foreground p-6 md:p-12">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-8">
           {isEditingTitle ? (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
               <Input
                 value={tempTitle}
                 onChange={(e) => setTempTitle(e.target.value)}
-                className="text-3xl font-bold bg-transparent border-b border-border rounded-none px-0"
+                className="text-2xl lg:text-3xl font-bold bg-transparent border-b border-border rounded-none px-0 flex-1 min-w-[200px]"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleTitleSave()
                   if (e.key === "Escape") {
@@ -399,13 +399,13 @@ export function PinboardApp() {
               </Button>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
               <h1
-                className="text-3xl font-bold cursor-pointer hover:text-muted-foreground transition-colors flex items-center gap-2"
+                className="text-2xl lg:text-3xl font-bold cursor-pointer hover:text-muted-foreground transition-colors flex items-center gap-2"
                 onClick={() => setIsEditingTitle(true)}
               >
                 {data.title}
-                <Edit2 className="w-5 h-5 opacity-50" />
+                <Edit2 className="w-4 h-4 lg:w-5 lg:h-5 opacity-50" />
               </h1>
               <Popover>
                 <PopoverTrigger asChild>
@@ -435,7 +435,7 @@ export function PinboardApp() {
                   </div>
                 </PopoverContent>
               </Popover>
-              <div className="hidden md:flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <Columns3 className="w-5 h-5 text-muted-foreground" />
                 <Select
                   value={columnCount.toString()}
@@ -457,38 +457,42 @@ export function PinboardApp() {
                 size="sm"
                 variant={hideDescriptions ? "default" : "ghost"}
                 onClick={() => setHideDescriptions(!hideDescriptions)}
-                className="h-9"
+                className="h-9 whitespace-nowrap"
               >
-                {hideDescriptions ? "Show" : "Hide"} Descriptions
+                <span className="hidden sm:inline">{hideDescriptions ? "Show" : "Hide"} Descriptions</span>
+                <span className="sm:hidden">Desc</span>
               </Button>
               <Button
                 size="sm"
                 variant={!showTags ? "default" : "ghost"}
                 onClick={() => setShowTags(!showTags)}
-                className="h-9"
+                className="h-9 whitespace-nowrap"
               >
-                {showTags ? "Hide" : "Show"} Tags
+                <span className="hidden sm:inline">{showTags ? "Hide" : "Show"} Tags</span>
+                <span className="sm:hidden">Tags</span>
               </Button>
               <Button
                 size="sm"
                 variant={!showRatings ? "default" : "ghost"}
                 onClick={() => setShowRatings(!showRatings)}
-                className="h-9"
+                className="h-9 whitespace-nowrap"
               >
-                {showRatings ? "Hide" : "Show"} Ratings
+                <span className="hidden sm:inline">{showRatings ? "Hide" : "Show"} Ratings</span>
+                <span className="sm:hidden">Rate</span>
               </Button>
               <Button
                 size="sm"
                 variant={hideUrls ? "default" : "ghost"}
                 onClick={() => setHideUrls(!hideUrls)}
-                className="h-9"
+                className="h-9 whitespace-nowrap"
               >
-                {hideUrls ? "Show" : "Hide"} URLs
+                <span className="hidden sm:inline">{hideUrls ? "Show" : "Hide"} URLs</span>
+                <span className="sm:hidden">URLs</span>
               </Button>
             </div>
           )}
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={handleExport} title="Export data">
               <Upload className="w-4 h-4" />
             </Button>
@@ -528,6 +532,7 @@ export function PinboardApp() {
                   allServices={data.services}
                   availableFlags={data.availableFlags}
                   allCategories={data.categories.map((c) => c.name)}
+                  allCategoriesData={data.categories}
                   columnCount={columnCount}
                   textColor={textColor}
                   hideDescriptions={hideDescriptions}
@@ -562,6 +567,7 @@ export function PinboardApp() {
                 allServices={data.services}
                 availableFlags={data.availableFlags}
                 allCategories={data.categories.map((c) => c.name)}
+                allCategoriesData={data.categories}
                 columnCount={columnCount}
                 textColor={textColor}
                 hideDescriptions={hideDescriptions}

@@ -28,6 +28,7 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
   const [tags, setTags] = useState<string[]>([])
   const [categoryTags, setCategoryTags] = useState<{ [categoryName: string]: string[] }>({})
   const [newTag, setNewTag] = useState("")
+  const [categoryTagInputs, setCategoryTagInputs] = useState<{ [category: string]: string }>({})
   const [newFlag, setNewFlag] = useState("")
   const [isFetching, setIsFetching] = useState(false)
   const [showHttpsPrompt, setShowHttpsPrompt] = useState(false)
@@ -115,12 +116,13 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
   }
 
   const handleAddCategoryTag = (category: string) => {
-    if (newTag && !(categoryTags[category] || []).includes(newTag)) {
+    const tagValue = categoryTagInputs[category] || ""
+    if (tagValue && !(categoryTags[category] || []).includes(tagValue)) {
       setCategoryTags({
         ...categoryTags,
-        [category]: [...(categoryTags[category] || []), newTag],
+        [category]: [...(categoryTags[category] || []), tagValue],
       })
-      setNewTag("")
+      setCategoryTagInputs({ ...categoryTagInputs, [category]: "" })
     }
   }
 
@@ -143,7 +145,7 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
           Add Service
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
         <DialogHeader>
           <DialogTitle>Add New Service</DialogTitle>
         </DialogHeader>
@@ -310,8 +312,8 @@ export function AddServiceDialog({ categories, availableFlags, onAdd, onAddFlag 
                     <div className="flex gap-2">
                       <Input
                         placeholder={`Add tag for ${category}`}
-                        value={newTag}
-                        onChange={(e) => setNewTag(e.target.value)}
+                        value={categoryTagInputs[category] || ""}
+                        onChange={(e) => setCategoryTagInputs({ ...categoryTagInputs, [category]: e.target.value })}
                         onKeyDown={(e) => e.key === "Enter" && handleAddCategoryTag(category)}
                       />
                       <Button size="sm" onClick={() => handleAddCategoryTag(category)}>

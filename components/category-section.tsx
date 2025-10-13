@@ -35,6 +35,7 @@ interface CategorySectionProps {
   allServices: Service[]
   availableFlags: string[]
   allCategories: string[]
+  allCategoriesData: Category[]
   columnCount: number
   textColor: string
   hideDescriptions: boolean
@@ -108,6 +109,7 @@ export function CategorySection({
   allServices,
   availableFlags,
   allCategories,
+  allCategoriesData,
   columnCount,
   textColor,
   hideDescriptions,
@@ -468,6 +470,7 @@ export function CategorySection({
                   service={service}
                   availableFlags={availableFlags}
                   allCategories={allCategories}
+                  allCategoriesData={allCategoriesData}
                   allServices={allServices}
                   currentCategory={category.name}
                   categoryHue={category.hue}
@@ -494,6 +497,7 @@ export function CategorySection({
               service={service}
               availableFlags={availableFlags}
               allCategories={allCategories}
+              allCategoriesData={allCategoriesData}
               allServices={allServices}
               currentCategory={category.name}
               categoryHue={category.hue}
