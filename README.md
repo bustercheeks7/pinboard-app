@@ -1,6 +1,7 @@
 # 📌 Pinboard App
 
 A modern, responsive **Pinboard** application built with **Next.js**, **React 19**, **Tailwind CSS v4**, and **Shadcn UI**.  
+It’s fully production-ready and deployed on **Vercel**.
 
 ---
 
@@ -62,15 +63,16 @@ A modern, responsive **Pinboard** application built with **Next.js**, **React 19
 
 ## 🧑‍💻 Project Structure
 
+```
 pinboard-app/
-├─ app/ → Next.js App Router pages and layouts
-├─ components/ui/ → Shadcn UI components
-├─ components/ → Custom app components
-├─ hooks/ → Reusable React hooks
-├─ lib/ → Utility functions
-├─ styles/ → Global CSS
-└─ public/ → Static assets
-
+├─ app/                → Next.js App Router pages and layouts
+├─ components/ui/      → Shadcn UI components
+├─ components/         → Custom app components
+├─ hooks/              → Reusable React hooks
+├─ lib/                → Utility functions
+├─ styles/             → Global CSS
+└─ public/             → Static assets
+```
 
 ---
 
@@ -92,17 +94,25 @@ Vercel automatically builds and deploys the app on every GitHub commit using:
 npm install
 npm run build
 npm start
+```
 
-✅ Summary
-Feature	Status	Notes
-App Router + RSC	✅	Modern Next.js architecture
-TypeScript	✅	Used throughout
-Tailwind CSS 4	✅	Default configuration
-Shadcn UI + Radix UI	✅	Actively used
-Dark Mode	⚠️	Supported in code, not implemented in UI
-localStorage	⚠️	Only used internally by next-themes (not app data)
-Drag and Drop	✅	Implemented via @dnd-kit
-🏁 Final Notes
+---
 
-This project reflects a modern, maintainable frontend stack with clean architecture, flexible component design, and current-generation React/Next.js tooling.
+## ✅ Summary
+
+| Feature | Status | Notes |
+|----------|--------|-------|
+| App Router + RSC | ✅ | Modern Next.js architecture |
+| TypeScript | ✅ | Used throughout |
+| Tailwind CSS 4 | ✅ | Default configuration |
+| Shadcn UI + Radix UI | ✅ | Actively used |
+| Dark Mode | ⚠️ | Supported in code, not implemented in UI |
+| localStorage | ⚠️ | Only used internally by `next-themes` (not app data) |
+| Drag and Drop | ✅ | Implemented via @dnd-kit |
+
+---
+
+### 🏁 Final Notes
+
+This project reflects a **modern, maintainable frontend stack** with clean architecture, flexible component design, and current-generation React/Next.js tooling.  
 The theme system and custom styling can easily be expanded in the future.
