@@ -1,7 +1,6 @@
 # 📌 Pinboard App
 
 A modern, responsive **Pinboard** application built with **Next.js**, **React 19**, **Tailwind CSS v4**, and **Shadcn UI**.  
-It’s fully production-ready and deployed on **Vercel**.
 
 ---
 
@@ -30,7 +29,6 @@ It’s fully production-ready and deployed on **Vercel**.
 
 - Integrated with [`next-themes`](https://github.com/pacocoursey/next-themes) for potential light/dark mode support  
 - Currently, the app **does not include a theme switcher** — it uses a single visual theme  
-- The feature can be easily enabled later if needed
 
 ---
 
