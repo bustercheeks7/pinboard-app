@@ -1,116 +1,123 @@
-# 📌 Pinboard App
+# Pinboard App
 
-A modern, responsive **Pinboard** application built with **Next.js**, **React 19**, **Tailwind CSS v4**, and **Shadcn UI**.  
+A customizable service organization and bookmarking application that helps you manage and categorize your favorite web services, tools, and resources with visual organization and flexible filtering.
 
----
+## Features
 
-## 🚀 Tech Stack
+### Service Management
+- **Add & organize services** - Save web services with names, URLs, descriptions, and metadata
+- **Multi-category support** - Assign services to multiple categories for flexible organization
+- **Custom flags** - Mark services with custom flags (e.g., "paid", "untested", "deprecated")
+- **Tagging system** - Add general tags that appear across all categories, plus category-specific tags
+- **Rating system** - Rate services per category (1-5 stars) to track your preferences
+- **Visual customization** - Adjust card background intensity for each service
 
-### 🧱 Framework
-**Next.js 15.2.4** (App Router + React Server Components)
+### Category Organization
+- **Custom categories** - Create unlimited categories to organize your services
+- **Category tagging** - Add tags to categories for better organization
+- **Drag & drop reordering** - Rearrange both services and categories with intuitive drag-and-drop
+- **Color coding** - Each category gets a unique hue for visual distinction
+- **Collapsible sections** - Expand/collapse categories to focus on what matters
 
-- Uses the new `app/` directory layout (`layout.tsx`, `page.tsx`)
-- Built with **React 19** and **TypeScript**
-- Supports modern rendering features like **React Server Components (RSC)** and **streaming**
+### User Interface
+- **Responsive layout** - Works seamlessly on desktop and mobile devices
+- **Column control** - Switch between 1, 2, or 3 column layouts
+- **Customizable text colors** - Choose from multiple text color options for better readability
+- **Toggle visibility** - Show/hide descriptions, tags, ratings, and URLs as needed
+- **Dark theme** - Clean, modern dark interface
 
----
+### Data Management
+- **Local storage** - All data is saved in your browser's localStorage
+- **Export/Import** - Download your pinboard as JSON or import from a file
+- **Auto-fetch metadata** - Automatically retrieve titles and descriptions from URLs
+- **Persistent settings** - Your layout preferences are remembered across sessions
 
-### 🎨 UI & Styling
-**Shadcn UI + Radix UI + Tailwind CSS 4**
+### Link Handling
+- **Click to open** - Left-click any service card to open its URL in a new tab
+- **Middle-click support** - Use middle mouse button to open links in background tabs
+- **External link indicators** - Visual cues show when you're linking to external services
 
-- Accessible, prebuilt UI components via **Shadcn UI**
-- Built on **Radix UI** headless primitives
-- Styled with **Tailwind CSS v4** using its new PostCSS plugin system
-- Uses **default Tailwind themes** — no “new-york” or OKLCH color customizations
+## Tech Stack
 
----
+- **Next.js 15.2.4** - React framework with App Router
+- **React 19** - Latest React with modern features
+- **TypeScript** - Type-safe development
+- **Tailwind CSS v4** - Utility-first styling
+- **Shadcn UI** - Accessible component library built on Radix UI
+- **@dnd-kit** - Smooth drag-and-drop interactions
+- **next-themes** - Theme management system
 
-### 🌗 Theme System (Available but Inactive)
+## Getting Started
 
-- Integrated with [`next-themes`](https://github.com/pacocoursey/next-themes) for potential light/dark mode support  
-- Currently, the app **does not include a theme switcher** — it uses a single visual theme  
-
----
-
-### ⚙️ State Management
-
-- Uses **React Hooks** (`useState`, `useEffect`) for component-level state
-- No external state management libraries (Redux, Zustand, etc.)
-- Keeps the app lightweight and maintainable
-
----
-
-### 🖱️ Drag & Drop
-
-- Powered by **[@dnd-kit](https://github.com/clauderic/dnd-kit)**
-- Enables smooth, touch-friendly drag-and-drop interactions
-- Used for reordering items and categories
-
----
-
-### 🧰 Additional Libraries
-
-| Library | Purpose |
-|----------|----------|
-| **TypeScript 5** | Type safety across the app |
-| **Lucide-React** | Icon set |
-| **date-fns** | Date and time utilities |
-| **react-hook-form** + **zod** | Form handling and validation |
-
----
-
-## 🧑‍💻 Project Structure
-
-```
-pinboard-app/
-├─ app/                → Next.js App Router pages and layouts
-├─ components/ui/      → Shadcn UI components
-├─ components/         → Custom app components
-├─ hooks/              → Reusable React hooks
-├─ lib/                → Utility functions
-├─ styles/             → Global CSS
-└─ public/             → Static assets
-```
-
----
-
-## ⚡ Development Commands
-
-| Command | Description |
-|----------|-------------|
-| `npm run dev` | Run the app locally in development mode |
-| `npm run build` | Build the app for production |
-| `npm start` | Start the production build locally |
-
----
-
-## 🌍 Deployment
-
-Hosted on **[Vercel](https://vercel.com)**.  
-Vercel automatically builds and deploys the app on every GitHub commit using:
 ```bash
+# Install dependencies
 npm install
+
+# Run development server
+npm run dev
+
+# Build for production
 npm run build
+
+# Start production server
 npm start
 ```
 
----
+The app will be available at `http://localhost:3000`
 
-## ✅ Summary
+## Project Structure
 
-| Feature | Status | Notes |
-|----------|--------|-------|
-| App Router + RSC | ✅ | Modern Next.js architecture |
-| TypeScript | ✅ | Used throughout |
-| Tailwind CSS 4 | ✅ | Default configuration |
-| Shadcn UI + Radix UI | ✅ | Actively used |
-| Dark Mode | ⚠️ | Supported in code, not implemented in UI |
-| localStorage | ⚠️ | Only used internally by `next-themes` (not app data) |
-| Drag and Drop | ✅ | Implemented via @dnd-kit |
+```
+├── app/                          # Next.js App Router
+│   ├── layout.tsx               # Root layout
+│   ├── page.tsx                 # Homepage
+│   └── api/fetch-metadata/      # Metadata fetching API
+├── components/
+│   ├── pinboard-app.tsx         # Main application component
+│   ├── category-section.tsx     # Category display & management
+│   ├── service-card.tsx         # Individual service cards
+│   ├── add-service-dialog.tsx   # Add new service dialog
+│   ├── edit-category-dialog.tsx # Edit category dialog
+│   └── ui/                      # Shadcn UI components
+├── hooks/                       # Custom React hooks
+├── lib/                         # Utility functions
+└── public/                      # Static assets
+```
 
----
+## Usage
 
-### 🏁 Final Notes
+### Adding a Service
+1. Click "Add Service" button
+2. Enter the service URL (metadata will auto-fetch)
+3. Assign to one or more categories
+4. Optionally add flags, tags, ratings, and description
+5. Click "Add Service"
 
-This project reflects a **modern, maintainable frontend stack** with clean architecture, flexible component design, and current-generation React/Next.js tooling.  
-The theme system and custom styling can easily be expanded in the future.
+### Organizing Services
+- **Reorder services** - Enable drag & drop mode and drag cards within categories
+- **Reorder categories** - Drag category headers to change their order
+- **Edit services** - Click the edit icon on any service card
+- **Delete services** - Use the delete button in the edit dialog
+
+### Customizing Your View
+- **Change layout** - Use the columns selector (1-3 columns)
+- **Adjust colors** - Click the palette icon to choose text colors
+- **Toggle elements** - Use the settings menu to show/hide descriptions, tags, ratings, or URLs
+- **Edit title** - Click the edit icon next to the pinboard title
+
+### Managing Data
+- **Export** - Click "Export JSON" to download your pinboard
+- **Import** - Click "Import JSON" to load a previously exported pinboard
+- **Category management** - Click "Edit Categories" to manage category tags and settings
+
+## Browser Compatibility
+
+Works in all modern browsers that support:
+- ES6+ JavaScript features
+- CSS Grid and Flexbox
+- localStorage API
+- fetch API
+
+## License
+
+This project is open source and available for personal and commercial use.
