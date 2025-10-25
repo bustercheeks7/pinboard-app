@@ -175,8 +175,9 @@ export function ServiceCard({
     }
   }
 
-  const handleCardClick = () => {
-    if (!isEditing && !justClosedRef.current) {
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!isEditing && !justClosedRef.current && e.button === 0) {
+      e.preventDefault()
       window.open(service.url, "_blank", "noopener,noreferrer")
     }
   }
@@ -237,7 +238,10 @@ export function ServiceCard({
           </div>
         )}
 
-        <div
+        <a
+          href={service.url}
+          target="_blank"
+          rel="noopener noreferrer"
           onClick={!isEditing ? handleCardClick : undefined}
           className={`flex-1 min-w-0 group ${!isEditing ? "cursor-pointer" : ""}`}
         >
@@ -658,7 +662,7 @@ export function ServiceCard({
               )}
             </div>
           )}
-        </div>
+        </a>
       </div>
     </div>
   )
