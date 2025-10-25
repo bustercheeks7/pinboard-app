@@ -1,16 +1,10 @@
-// ✅ This must be the very first line
-export const dynamic = 'force-dynamic';
+"use client"; // must be first
 
-import React from 'react';
+// Force dynamic rendering to bypass prerender bug
+export const dynamic = "force-dynamic";
 
-export default function Page() {
-  return <main>Hello world</main>;
-}
-
-"use client"
-
-import { PinboardApp } from "@/components/pinboard-app"
+import { PinboardApp } from "@/components/pinboard-app";
 
 export default function Home() {
-  return <PinboardApp />
+  return <PinboardApp />;
 }
