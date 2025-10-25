@@ -176,9 +176,12 @@ export function ServiceCard({
   }
 
   const handleCardClick = (e: React.MouseEvent) => {
-    if (!isEditing && !justClosedRef.current && e.button === 0) {
-      e.preventDefault()
-      window.open(service.url, "_blank", "noopener,noreferrer")
+    if (!isEditing && !justClosedRef.current) {
+      if (e.button === 0) {
+        window.open(service.url, "_blank", "noopener,noreferrer")
+      } else if (e.button === 1) {
+        window.open(service.url, "_blank", "noopener,noreferrer")
+      }
     }
   }
 
@@ -238,11 +241,8 @@ export function ServiceCard({
           </div>
         )}
 
-        <a
-          href={service.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={!isEditing ? handleCardClick : undefined}
+        <div
+          onMouseDown={!isEditing ? handleCardClick : undefined}
           className={`flex-1 min-w-0 group ${!isEditing ? "cursor-pointer" : ""}`}
         >
           <div className="flex items-start justify-between gap-2 mb-2">
@@ -662,7 +662,7 @@ export function ServiceCard({
               )}
             </div>
           )}
-        </a>
+        </div>
       </div>
     </div>
   )
