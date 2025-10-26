@@ -3,4 +3,4 @@ const nextConfig = {
   output: "standalone", // disables static export for SSR/dynamic pages
 };
 
-module.exports = nextConfig;
+export default nextConfig;

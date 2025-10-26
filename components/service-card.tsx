@@ -252,7 +252,13 @@ export function ServiceCard({
             </div>
             <Dialog open={isEditing} onOpenChange={handleOpenChange}>
               <DialogTrigger asChild>
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0 shrink-0" onClick={(e) => e.stopPropagation()}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
                   <Edit2 className="w-4 h-4" />
                 </Button>
               </DialogTrigger>
